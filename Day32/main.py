@@ -1,42 +1,33 @@
-# import smtplib
-
-# my_email = "appbreweryinfo@gmail.com"
-# password = "wer432"
-# connection = smtplib.SMTP("smtp.gmail.com")
-# this line will make this connection secure.
-# connection.starttls()
-# connection.login(user=my_email, password=password)
-# connection.sendmail(from_addr=my_email,
-#                    to_addrs="appbreweryinfo@gmail.com",
-#                     msg="Subject:Hello\n\nThis is the body of my email")
-# connection.close()
-# import datetime as dt
-
-# now method gets us current time and date:
-# now = dt.datetime.now()
-# year = now.year
-# month = now.month
-# day_of_week = now.weekday()
-# print(year)
-
-# date_of_birth = dt.datetime(year=1990, month=12, day=15)
-# print(date_of_birth)
-
+##################### Extra Hard Starting Project ######################
 import smtplib
-import datetime as dt
+from datetime import datetime
+import pandas
 import random
+
 
 MY_EMAIL = "mohammadimitra533@gmail.com"
 MY_PASSWORD = ""
-now = dt.datetime.now()
-weekday = now.weekday()
-if weekday == 0:  # Monday
-    with open("./Day32/quotes.txt") as quotes:
-        all_quotes = quotes.readline()
-        quote = random.choice(all_quotes)
+# 2. Check if today matches a birthday in the birthdays.csv
+today = datetime.now()
+today_tuple = (today.month, today.day)
 
-    print(quote)
-    with smtplib.SMTP("smtp.gmail.com") as connection:
-        connection.starttls()  # for security:
-        connection.login(MY_EMAIL, MY_PASSWORD)
-        connection.sendmail(from_addr=MY_EMAIL, to_addrs=MY_EMAIL, msg=f"subject:Monday Motivation\n\n{quote}")
+data = pandas.read_csv("./Day32/birthdays.csv")
+birthday_dic = {(data_row["month"], data_row["day"]): data_row for (index, data_row) in data.iterrows()}
+
+# 3. If step 2 is true, pick a random letter from letter templates and replace the [NAME] with the person's actual
+# name from birthdays.csv
+if today_tuple in birthday_dic:
+    birthday_person = birthday_dic[today_tuple]
+    file = f"./Day32/letter_{random.randint(1, 3)}.txt"
+    with open(file) as letter_file:
+        contents = letter_file.read()
+        contents = contents.replace("[NAME]", birthday_person["name"])  # save as contents for change the name and
+        # doesn't get error.
+        # 4. Send the letter generated in step 3 to that person's email address.
+        with smtplib.SMTP("smtp.gmail.com") as connection:
+            connection.starttls()
+            connection.login(MY_EMAIL, MY_PASSWORD)
+            connection.sendmail(from_addr=MY_EMAIL, to_addrs=birthday_person["email"],
+                                msg=f"subject:Happy Birthday\n\n{contents}")
+
+
