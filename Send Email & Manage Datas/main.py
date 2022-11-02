@@ -11,14 +11,14 @@ MY_PASSWORD = ""
 today = datetime.now()
 today_tuple = (today.month, today.day)
 
-data = pandas.read_csv("./Day32/birthdays.csv")
+data = pandas.read_csv("./Send Email & Manage Datas/birthdays.csv")
 birthday_dic = {(data_row["month"], data_row["day"]): data_row for (index, data_row) in data.iterrows()}
 
 # 3. If step 2 is true, pick a random letter from letter templates and replace the [NAME] with the person's actual
 # name from birthdays.csv
 if today_tuple in birthday_dic:
     birthday_person = birthday_dic[today_tuple]
-    file = f"./Day32/letter_{random.randint(1, 3)}.txt"
+    file = f"./Send Email & Manage Datas/letter_{random.randint(1, 3)}.txt"
     with open(file) as letter_file:
         contents = letter_file.read()
         contents = contents.replace("[NAME]", birthday_person["name"])  # save as contents for change the name and
